@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0a1628">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>GTech — Cyber Cafe Manager</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg-0: #050a14;
+  --bg-1: #0a1628;
+  --bg-2: #0f1f3a;
+  --bg-3: #16294a;
+  --line: rgba(86, 156, 255, 0.15);
+  --line-strong: rgba(86, 156, 255, 0.3);
+  --text: #e6f0ff;
+  --text-dim: #8aa0c4;
+  --text-faint: #4a6285;
+  --accent: #4d9fff;
+  --accent-2: #00d4ff;
+  --accent-glow: rgba(77, 159, 255, 0.4);
+  --good: #22d39a;
+  --warn: #ffb547;
+  --bad: #ff5b6e;
+  --gold: #ffcd5c;
+  --grad-1: linear-gradient(135deg, #4d9fff 0%, #00d4ff 100%);
+  --grad-2: linear-gradient(135deg, #1a3a6b 0%, #0a1628 100%);
+  --grad-card: linear-gradient(160deg, rgba(77, 159, 255, 0.08) 0%, rgba(10, 22, 40, 0.6) 100%);
+  --shadow-glow: 0 0 32px rgba(77, 159, 255, 0.18);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+}
+html, body {
+  background: var(--bg-0);
+  color: var(--text);
+  font-family: 'Sora', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  background:
+    radial-gradient(ellipse at top, rgba(77, 159, 255, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(0, 212, 255, 0.06) 0%, transparent 60%),
+    var(--bg-0);
+  background-attachment: fixed;
+  padding-bottom: 90px;
+  padding-top: env(safe-area-inset-top);
+}
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, select, textarea {
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: rgba(10, 22, 40, 0.8);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  width: 100%;
+  outline: none;
+  transition: all 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
+/* === LAYOUT === */
+.app { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 4px;
+  margin-bottom: 8px;
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-logo {
+  width: 38px; height: 38px;
+  border-radius: 9px;
+  background: var(--grad-2);
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-glow);
+  overflow: hidden;
+}
+.brand-logo img { width: 100%; height: 100%; object-fit: cover; }
+.brand-name {
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  background: var(--grad-1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.brand-tag {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  margin-top: -2px;
+}
+.icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: rgba(86, 156, 255, 0.1);
+  border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--text-dim);
+  transition: all 0.2s ease;
+}
+.icon-btn:active { transform: scale(0.92); background: rgba(86, 156, 255, 0.2); }
+
+/* === BOTTOM NAV === */
+.nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: rgba(5, 10, 20, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--line);
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  z-index: 100;
+}
+.nav-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px;
+  color: var(--text-faint);
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.2s ease;
+}
+.nav-item.active { color: var(--accent); }
+.nav-item.active::before {
+  content: '';
+  position: absolute; top: -8px;
+  left: 50%; transform: translateX(-50%);
+  width: 32px; height: 3px;
+  border-radius: 2px;
+  background: var(--grad-1);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.nav-icon { font-size: 20px; line-height: 1; }
+
+/* === CARDS === */
+.card {
+  background: var(--grad-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.card-title {
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.card-action {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(77, 159, 255, 0.12);
+}
+
+/* === BUTTONS === */
+.btn {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  background: var(--grad-1);
+  color: #051226;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(77, 159, 255, 0.3);
+}
+.btn:active { transform: scale(0.98); }
+.btn-secondary {
+  background: rgba(86, 156, 255, 0.1);
+  color: var(--accent);
+  border: 1px solid var(--line-strong);
+  box-shadow: none;
+}
+.btn-danger {
+  background: rgba(255, 91, 110, 0.12);
+  color: var(--bad);
+  border: 1px solid rgba(255, 91, 110, 0.3);
+  box-shadow: none;
+}
+.btn-row { display: flex; gap: 10px; }
+.btn-row .btn { flex: 1; }
+
+/* === FORM === */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.form-hint {
+  font-size: 12px;
+  color: var(--text-faint);
+  margin-top: 4px;
+}
+.input-prefix {
+  position: relative;
+}
+.input-prefix .prefix {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-faint);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1px;
+  pointer-events: none;
+}
+.input-prefix input { padding-left: 50px; }
+
+/* === STAT BLOCKS === */
+.hero-stat {
+  background:
+    radial-gradient(circle at top right, rgba(77, 159, 255, 0.2) 0%, transparent 60%),
+    var(--grad-card);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 24px 22px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-stat::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+.hero-label {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+.hero-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  background: var(--grad-1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.hero-currency {
+  font-size: 14px;
+  color: var(--text-faint);
+  margin-right: 4px;
+  font-weight: 500;
+}
+.hero-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.hero-meta strong { color: var(--text); font-weight: 600; }
+
+/* Stat grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-tile {
+  background: var(--grad-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  position: relative;
+}
+.stat-tile-label {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 6px;
+}
+.stat-tile-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+.stat-tile-value .tiny { font-size: 11px; color: var(--text-faint); margin-right: 2px; }
+
+/* === LIST ROW === */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+.row:last-child { border-bottom: none; }
+.row-main { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+.row-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(77, 159, 255, 0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.row-icon.green { background: rgba(34, 211, 154, 0.12); color: var(--good); }
+.row-icon.gold { background: rgba(255, 205, 92, 0.12); color: var(--gold); }
+.row-icon.warn { background: rgba(255, 181, 71, 0.12); color: var(--warn); }
+.row-icon.bad { background: rgba(255, 91, 110, 0.12); color: var(--bad); }
+.row-text { flex: 1; min-width: 0; }
+.row-title { font-weight: 600; font-size: 14px; color: var(--text); }
+.row-sub { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+.row-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+  text-align: right;
+}
+.row-amount .tiny { font-size: 10px; color: var(--text-faint); margin-right: 2px; }
+.row-amount.green { color: var(--good); }
+.row-amount.bad { color: var(--bad); }
+
+/* === BADGES === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.badge-good { background: rgba(34, 211, 154, 0.12); color: var(--good); }
+.badge-warn { background: rgba(255, 181, 71, 0.12); color: var(--warn); }
+.badge-bad { background: rgba(255, 91, 110, 0.12); color: var(--bad); }
+.badge-info { background: rgba(77, 159, 255, 0.12); color: var(--accent); }
+
+/* === MODAL === */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--bg-1);
+  border-top: 1px solid var(--line-strong);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 22px 18px calc(22px + env(safe-area-inset-bottom));
+  position: relative;
+  animation: slideUp 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.modal-handle {
+  width: 40px; height: 4px;
+  background: var(--line-strong);
+  border-radius: 999px;
+  margin: 0 auto 18px;
+}
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.modal-desc {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+/* === PIN SCREEN === */
+.pin-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-0);
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.pin-screen.show { display: flex; }
+.pin-logo {
+  width: 88px; height: 88px;
+  border-radius: 22px;
+  background: var(--grad-2);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 0 60px var(--accent-glow);
+  margin-bottom: 24px;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.pin-logo img { width: 100%; height: 100%; object-fit: cover; }
+.pin-title {
+  font-size: 22px;
+  font-weight: 800;
+  background: var(--grad-1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+.pin-subtitle {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+.pin-dots {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.pin-dot {
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--line-strong);
+  transition: all 0.2s ease;
+}
+.pin-dot.filled {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+.pin-dot.error {
+  background: var(--bad);
+  border-color: var(--bad);
+  animation: shake 0.4s ease;
+}
+.pin-pad {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  gap: 12px;
+}
+.pin-key {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(86, 156, 255, 0.05);
+  border: 1px solid var(--line);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text);
+  transition: all 0.15s ease;
+}
+.pin-key:active { background: var(--accent); color: var(--bg-0); transform: scale(0.95); }
+.pin-key.fn { font-size: 14px; font-weight: 600; color: var(--text-dim); }
+.pin-error {
+  color: var(--bad);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 16px;
+  height: 18px;
+}
+
+/* === CHIP === */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(86, 156, 255, 0.08);
+  border: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim);
+  transition: all 0.2s ease;
+}
+.chip.active {
+  background: var(--grad-1);
+  color: var(--bg-0);
+  border-color: transparent;
+  font-weight: 700;
+}
+
+/* === SPLIT PREVIEW === */
+.split-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--bg-2);
+  margin: 14px 0 16px;
+}
+.split-bar-seg { transition: width 0.4s ease; }
+
+/* === CONSUMABLE ITEM ROW === */
+.consume-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 32px;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.consume-row:last-child { border-bottom: none; }
+.consume-name { font-weight: 600; font-size: 14px; }
+.consume-stock { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+.consume-input { padding: 8px 10px; font-size: 14px; text-align: right; }
+
+/* === EMPTY STATE === */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-faint);
+}
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+.empty-text {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* === TOAST === */
+.toast {
+  position: fixed;
+  top: calc(env(safe-area-inset-top) + 16px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-120%);
+  background: var(--bg-2);
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+  box-shadow: var(--shadow-card);
+  max-width: 90%;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.good { border-color: rgba(34, 211, 154, 0.4); }
+.toast.bad { border-color: rgba(255, 91, 110, 0.4); }
+
+/* === REPORT CHART === */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+  padding: 8px 0;
+  margin-bottom: 8px;
+}
+.bar-chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  height: 100%;
+  justify-content: flex-end;
+  min-width: 0;
+}
+.bar-chart-bar {
+  width: 100%;
+  background: var(--grad-1);
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.4s ease;
+}
+.bar-chart-label {
+  font-size: 9px;
+  color: var(--text-faint);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.3px;
+}
+
+/* === PAGE TRANSITIONS === */
+.page { animation: pageIn 0.25s ease; }
+.page.hidden { display: none; }
+.section-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 12px 0 8px;
+  letter-spacing: -0.3px;
+}
+.section-sub {
+  color: var(--text-dim);
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+/* === FAB === */
+.fab {
+  position: fixed;
+  bottom: calc(82px + env(safe-area-inset-bottom));
+  right: 20px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--grad-1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  color: var(--bg-0);
+  box-shadow: 0 8px 24px rgba(77, 159, 255, 0.4);
+  z-index: 50;
+  font-weight: 300;
+}
+.fab:active { transform: scale(0.92); }
+
+/* === HELPERS === */
+.text-good { color: var(--good); }
+.text-bad { color: var(--bad); }
+.text-warn { color: var(--warn); }
+.text-dim { color: var(--text-dim); }
+.text-faint { color: var(--text-faint); }
+.text-mono { font-family: 'JetBrains Mono', monospace; }
+.text-right { text-align: right; }
+.flex-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; } .mt-16 { margin-top: 16px; } .mt-24 { margin-top: 24px; }
+.mb-8 { margin-bottom: 8px; } .mb-12 { margin-bottom: 12px; } .mb-16 { margin-bottom: 16px; }
+
+/* === ANIMATIONS === */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+/* hide on small screens */
+@media (max-height: 700px) {
+  .pin-key { width: 64px; height: 64px; font-size: 22px; }
+  .pin-pad { grid-template-columns: repeat(3, 64px); }
+}
+</style>
+</head>
+<body>
+
+<!-- PIN LOCK SCREEN -->
+<div class="pin-screen" id="pinScreen">
+  <div class="pin-logo"><img src="icon.png" alt="GTech"></div>
+  <div class="pin-title" id="pinTitle">GTech</div>
+  <div class="pin-subtitle" id="pinSubtitle">Enter your PIN</div>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+  </div>
+  <div class="pin-pad" id="pinPad"></div>
+  <div class="pin-error" id="pinError"></div>
+</div>
+
+<!-- MAIN APP -->
+<div id="appShell" style="display:none;">
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-logo"><img src="icon.png" alt="GTech"></div>
+        <div>
+          <div class="brand-name">GTech</div>
+          <div class="brand-tag">Cyber Cafe Manager</div>
+        </div>
+      </div>
+      <button class="icon-btn" onclick="openSettings()" aria-label="Settings">⚙</button>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page" id="page-home"></div>
+    <!-- ENTRY PAGE -->
+    <div class="page hidden" id="page-entry"></div>
+    <!-- INVENTORY PAGE -->
+    <div class="page hidden" id="page-inventory"></div>
+    <!-- ACCOUNTS PAGE -->
+    <div class="page hidden" id="page-accounts"></div>
+    <!-- REPORTS PAGE -->
+    <div class="page hidden" id="page-reports"></div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <button class="nav-item active" data-page="home" onclick="navTo('home')">
+        <span class="nav-icon">⌂</span><span>Home</span>
+      </button>
+      <button class="nav-item" data-page="entry" onclick="navTo('entry')">
+        <span class="nav-icon">＋</span><span>New</span>
+      </button>
+      <button class="nav-item" data-page="inventory" onclick="navTo('inventory')">
+        <span class="nav-icon">▦</span><span>Stock</span>
+      </button>
+      <button class="nav-item" data-page="accounts" onclick="navTo('accounts')">
+        <span class="nav-icon">◈</span><span>Accounts</span>
+      </button>
+      <button class="nav-item" data-page="reports" onclick="navTo('reports')">
+        <span class="nav-icon">▤</span><span>Reports</span>
+      </button>
+    </div>
+  </nav>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================================
+// GTech — Cyber Cafe Manager
+// Single-file Progressive Web App
+// All data stored locally via IndexedDB
+// ============================================================================
+
+const APP_VERSION = '1.0.0';
+const DB_NAME = 'gtech_db';
+const DB_VERSION = 1;
+const CURRENCY = 'KSh';
+
+// ============================================================================
+// DATABASE LAYER (IndexedDB)
+// ============================================================================
+let db;
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => { db = req.result; resolve(db); };
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('settings')) d.createObjectStore('settings', { keyPath: 'key' });
+      if (!d.objectStoreNames.contains('accounts')) d.createObjectStore('accounts', { keyPath: 'id' });
+      if (!d.objectStoreNames.contains('consumables')) d.createObjectStore('consumables', { keyPath: 'id' });
+      if (!d.objectStoreNames.contains('entries')) {
+        const s = d.createObjectStore('entries', { keyPath: 'id' });
+        s.createIndex('date', 'date', { unique: false });
+      }
+      if (!d.objectStoreNames.contains('restocks')) {
+        const s = d.createObjectStore('restocks', { keyPath: 'id' });
+        s.createIndex('date', 'date', { unique: false });
+      }
+      if (!d.objectStoreNames.contains('transfers')) {
+        const s = d.createObjectStore('transfers', { keyPath: 'id' });
+        s.createIndex('date', 'date', { unique: false });
+      }
+    };
+  });
+}
+
+function tx(store, mode = 'readonly') {
+  return db.transaction(store, mode).objectStore(store);
+}
+
+function dbPut(store, val) {
+  return new Promise((res, rej) => {
+    const r = tx(store, 'readwrite').put(val);
+    r.onsuccess = () => res(val); r.onerror = () => rej(r.error);
+  });
+}
+function dbGet(store, key) {
+  return new Promise((res, rej) => {
+    const r = tx(store).get(key);
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+function dbAll(store) {
+  return new Promise((res, rej) => {
+    const r = tx(store).getAll();
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+}
+function dbDelete(store, key) {
+  return new Promise((res, rej) => {
+    const r = tx(store, 'readwrite').delete(key);
+    r.onsuccess = () => res(); r.onerror = () => rej(r.error);
+  });
+}
+function dbClear(store) {
+  return new Promise((res, rej) => {
+    const r = tx(store, 'readwrite').clear();
+    r.onsuccess = () => res(); r.onerror = () => rej(r.error);
+  });
+}
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+const fmt = (n) => {
+  const v = Number(n) || 0;
+  return v.toLocaleString('en-KE', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+};
+const fmtMoney = (n) => `${CURRENCY} ${fmt(n)}`;
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const fromISO = (iso) => new Date(iso + 'T12:00:00');
+const niceDate = (iso) => fromISO(iso).toLocaleDateString('en-KE', { weekday:'short', month:'short', day:'numeric' });
+const shortDate = (iso) => fromISO(iso).toLocaleDateString('en-KE', { month:'short', day:'numeric' });
+
+function toast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ============================================================================
+// PIN LOCK
+// ============================================================================
+let pinBuffer = '';
+let pinMode = 'verify'; // verify | setup | confirm
+let pinSetupValue = '';
+
+async function hashPIN(pin) {
+  const enc = new TextEncoder().encode(pin + 'gtech_salt_v1');
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function buildPinPad() {
+  const pad = document.getElementById('pinPad');
+  const keys = ['1','2','3','4','5','6','7','8','9','clear','0','del'];
+  pad.innerHTML = keys.map(k => {
+    if (k === 'clear') return `<button class="pin-key fn" onclick="pinPress('clear')">CLR</button>`;
+    if (k === 'del') return `<button class="pin-key fn" onclick="pinPress('del')">DEL</button>`;
+    return `<button class="pin-key" onclick="pinPress('${k}')">${k}</button>`;
+  }).join('');
+}
+
+function pinPress(k) {
+  const errEl = document.getElementById('pinError');
+  errEl.textContent = '';
+  if (k === 'clear') { pinBuffer = ''; }
+  else if (k === 'del') { pinBuffer = pinBuffer.slice(0, -1); }
+  else if (pinBuffer.length < 4) { pinBuffer += k; }
+  updatePinDots();
+  if (pinBuffer.length === 4) setTimeout(checkPin, 150);
+}
+
+function updatePinDots(error) {
+  const dots = document.querySelectorAll('#pinDots .pin-dot');
+  dots.forEach((d, i) => {
+    d.className = 'pin-dot' + (i < pinBuffer.length ? ' filled' : '') + (error ? ' error' : '');
+  });
+}
+
+async function checkPin() {
+  const settings = await dbGet('settings', 'pinHash');
+  const setupDone = await dbGet('settings', 'setupComplete');
+
+  if (!setupDone) {
+    // Setup flow
+    if (pinMode === 'setup') {
+      pinSetupValue = pinBuffer;
+      pinBuffer = '';
+      pinMode = 'confirm';
+      document.getElementById('pinTitle').textContent = 'Confirm PIN';
+      document.getElementById('pinSubtitle').textContent = 'Enter the same PIN again';
+      updatePinDots();
+    } else if (pinMode === 'confirm') {
+      if (pinBuffer === pinSetupValue) {
+        const hash = await hashPIN(pinBuffer);
+        await dbPut('settings', { key: 'pinHash', value: hash });
+        pinBuffer = '';
+        unlockApp();
+        await initialSetup();
+      } else {
+        showPinError('PINs do not match');
+        pinBuffer = '';
+        pinMode = 'setup';
+        pinSetupValue = '';
+        document.getElementById('pinTitle').textContent = 'Create your PIN';
+        document.getElementById('pinSubtitle').textContent = 'Choose a 4-digit PIN to secure GTech';
+        updatePinDots();
+      }
+    }
+  } else {
+    // Verify flow
+    const hash = await hashPIN(pinBuffer);
+    if (hash === settings.value) {
+      pinBuffer = '';
+      unlockApp();
+    } else {
+      showPinError('Wrong PIN');
+      pinBuffer = '';
+      updatePinDots();
+    }
+  }
+}
+
+function showPinError(msg) {
+  document.getElementById('pinError').textContent = msg;
+  updatePinDots(true);
+  setTimeout(() => updatePinDots(false), 400);
+}
+
+function unlockApp() {
+  document.getElementById('pinScreen').classList.remove('show');
+  document.getElementById('appShell').style.display = '';
+  navTo('home');
+}
+
+async function showPinScreen() {
+  const setupDone = await dbGet('settings', 'setupComplete');
+  const pinHash = await dbGet('settings', 'pinHash');
+  buildPinPad();
+  if (!pinHash) {
+    pinMode = 'setup';
+    document.getElementById('pinTitle').textContent = 'Create your PIN';
+    document.getElementById('pinSubtitle').textContent = 'Choose a 4-digit PIN to secure GTech';
+  } else {
+    pinMode = 'verify';
+    document.getElementById('pinTitle').textContent = 'GTech';
+    document.getElementById('pinSubtitle').textContent = 'Enter your PIN';
+  }
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pinScreen').classList.add('show');
+}
+
+// ============================================================================
+// INITIAL SETUP (first-run onboarding)
+// ============================================================================
+async function initialSetup() {
+  const setupDone = await dbGet('settings', 'setupComplete');
+  if (setupDone) return;
+
+  // Seed default accounts
+  const defaultAccounts = [
+    { id: 'consumables', name: 'Consumables', icon: '🛒', balance: 0, fixedDaily: 0, fixed: false, order: 1 },
+    { id: 'rent', name: 'Rent', icon: '🏠', balance: 0, fixedDaily: 0, fixed: true, order: 2 },
+    { id: 'bills', name: 'Bills', icon: '💡', balance: 0, fixedDaily: 0, fixed: true, order: 3 },
+    { id: 'permit', name: 'Business Permit', icon: '📜', balance: 0, fixedDaily: 0, fixed: true, order: 4 },
+    { id: 'personal', name: 'Personal', icon: '👤', balance: 0, fixedDaily: 0, fixed: true, order: 5 },
+    { id: 'housing', name: 'Affordable Housing', icon: '🏘', balance: 0, fixedDaily: 0, fixed: true, order: 6 },
+    { id: 'savings', name: 'Savings', icon: '🐖', balance: 0, fixedDaily: 0, fixed: false, order: 7 }
+  ];
+  for (const a of defaultAccounts) {
+    a.bankType = ''; a.bankNumber = ''; a.deficit = 0;
+    await dbPut('accounts', a);
+  }
+
+  // Seed cash payouts as settings
+  await dbPut('settings', { key: 'attendantWage', value: 0 });
+  await dbPut('settings', { key: 'chamaDaily', value: 0 });
+  await dbPut('settings', { key: 'lastPrinterReading', value: 0 });
+  await dbPut('settings', { key: 'inkCostPerPage', value: 0 });
+  await dbPut('settings', { key: 'lastBackupReminder', value: todayISO() });
+  await dbPut('settings', { key: 'setupComplete', value: true });
+
+  // Open onboarding modal
+  setTimeout(() => openOnboarding(), 400);
+}
+
+function openOnboarding() {
+  openModal(`
+    <div class="modal-title">Welcome to GTech 👋</div>
+    <div class="modal-desc">Let's set up your business in a few quick steps. You can change anything later in settings.</div>
+    <div class="card" style="background: rgba(77, 159, 255, 0.06);">
+      <div style="font-weight:600; margin-bottom:6px;">Quick setup checklist</div>
+      <div style="font-size:13px; color: var(--text-dim); line-height: 1.7;">
+        ① Set your fixed daily amounts (Rent, Bills, etc.)<br>
+        ② Add your bank/M-Pesa account details<br>
+        ③ Add your consumable items (paper, ink, envelopes…)<br>
+        ④ Set your starting printer counter<br>
+        ⑤ You're ready to log your first day!
+      </div>
+    </div>
+    <button class="btn" onclick="closeModal(); openFixedAmounts()">Start setup →</button>
+    <button class="btn btn-secondary mt-8" onclick="closeModal()">I'll do it later</button>
+  `);
+}
+
+async function openFixedAmounts() {
+  const accounts = (await dbAll('accounts')).filter(a => a.fixed).sort((a,b)=>a.order-b.order);
+  const wage = (await dbGet('settings', 'attendantWage'))?.value || 0;
+  const chama = (await dbGet('settings', 'chamaDaily'))?.value || 0;
+  const printer = (await dbGet('settings', 'lastPrinterReading'))?.value || 0;
+  const ink = (await dbGet('settings', 'inkCostPerPage'))?.value || 0;
+
+  let html = `
+    <div class="modal-title">Fixed daily amounts</div>
+    <div class="modal-desc">How much should be set aside each day for fixed expenses?</div>
+  `;
+  for (const a of accounts) {
+    html += `
+      <div class="form-group">
+        <label class="form-label">${a.icon} ${a.name}</label>
+        <div class="input-prefix">
+          <span class="prefix">${CURRENCY}</span>
+          <input type="number" inputmode="decimal" id="fa_${a.id}" value="${a.fixedDaily || ''}" placeholder="0">
+        </div>
+      </div>
+    `;
+  }
+  html += `
+    <div class="form-group">
+      <label class="form-label">👷 Attendant daily wage</label>
+      <div class="input-prefix">
+        <span class="prefix">${CURRENCY}</span>
+        <input type="number" inputmode="decimal" id="fa_wage" value="${wage || ''}" placeholder="0">
+      </div>
+      <div class="form-hint">Cash paid daily, no bank transfer.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">🤝 Chama daily contribution</label>
+      <div class="input-prefix">
+        <span class="prefix">${CURRENCY}</span>
+        <input type="number" inputmode="decimal" id="fa_chama" value="${chama || ''}" placeholder="0">
+      </div>
+      <div class="form-hint">Recorded only, no bank transfer.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">🖨 Current printer counter reading</label>
+      <input type="number" inputmode="numeric" id="fa_printer" value="${printer || ''}" placeholder="0">
+      <div class="form-hint">The total page count shown on your printer right now.</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">🖋 Estimated ink cost per page</label>
+      <div class="input-prefix">
+        <span class="prefix">${CURRENCY}</span>
+        <input type="number" inputmode="decimal" step="0.01" id="fa_ink" value="${ink || ''}" placeholder="0.50">
+      </div>
+      <div class="form-hint">e.g. if a cartridge costs KSh 2,000 and prints 4,000 pages, enter 0.50.</div>
+    </div>
+    <button class="btn" onclick="saveFixedAmounts()">Save</button>
+  `;
+  openModal(html);
+}
+
+async function saveFixedAmounts() {
+  const accounts = (await dbAll('accounts')).filter(a => a.fixed);
+  for (const a of accounts) {
+    const v = parseFloat(document.getElementById('fa_' + a.id).value) || 0;
+    a.fixedDaily = v;
+    await dbPut('accounts', a);
+  }
+  await dbPut('settings', { key: 'attendantWage', value: parseFloat(document.getElementById('fa_wage').value) || 0 });
+  await dbPut('settings', { key: 'chamaDaily', value: parseFloat(document.getElementById('fa_chama').value) || 0 });
+  await dbPut('settings', { key: 'lastPrinterReading', value: parseInt(document.getElementById('fa_printer').value) || 0 });
+  await dbPut('settings', { key: 'inkCostPerPage', value: parseFloat(document.getElementById('fa_ink').value) || 0 });
+  closeModal();
+  toast('Saved ✓', 'good');
+  renderHome();
+}
+
+// ============================================================================
+// SPLIT CALCULATION (the heart of the app)
+// ============================================================================
+async function computeSplit({ totalIncome, pagesPrinted, consumablesUsed }) {
+  // Returns: { breakdown, savingsAmount, deficits, consumablesCost, leftover }
+
+  const accounts = (await dbAll('accounts')).sort((a,b)=>a.order-b.order);
+  const wage = (await dbGet('settings', 'attendantWage'))?.value || 0;
+  const chama = (await dbGet('settings', 'chamaDaily'))?.value || 0;
+  const inkCostPerPage = (await dbGet('settings', 'inkCostPerPage'))?.value || 0;
+  const allConsumables = await dbAll('consumables');
+
+  // Calculate consumables cost
+  let consumablesCost = 0;
+  const consumableBreakdown = [];
+
+  // Auto: pages printed → paper cost from any consumable marked autoPaper, plus ink cost
+  if (pagesPrinted > 0) {
+    consumablesCost += pagesPrinted * inkCostPerPage;
+    consumableBreakdown.push({ name: 'Ink (estimated)', qty: pagesPrinted, unit: 'pages', cost: pagesPrinted * inkCostPerPage });
+
+    const paperItem = allConsumables.find(c => c.autoPaper);
+    if (paperItem) {
+      const cost = pagesPrinted * (paperItem.unitCost || 0);
+      consumablesCost += cost;
+      consumableBreakdown.push({ name: paperItem.name, qty: pagesPrinted, unit: 'sheets', cost, consumableId: paperItem.id });
+    }
+  }
+  // Manual consumables used
+  for (const used of (consumablesUsed || [])) {
+    if (used.qty > 0) {
+      const item = allConsumables.find(c => c.id === used.consumableId);
+      if (item && !item.autoPaper) {
+        const cost = used.qty * (item.unitCost || 0);
+        consumablesCost += cost;
+        consumableBreakdown.push({ name: item.name, qty: used.qty, unit: item.unit || 'units', cost, consumableId: item.id });
+      }
+    }
+  }
+
+  // Build deduction order (priority high → low for funding)
+  // Order: wage (cash) → chama (cash) → consumables → bills → rent → permit → personal → housing → savings (remainder)
+  const fundingOrder = [
+    { type: 'cash', id: 'wage', name: 'Attendant Wage', icon: '👷', amount: wage },
+    { type: 'cash', id: 'chama', name: 'Chama', icon: '🤝', amount: chama },
+    { type: 'account', id: 'consumables', amount: consumablesCost },
+    { type: 'account', id: 'bills', amount: accounts.find(a=>a.id==='bills')?.fixedDaily || 0 },
+    { type: 'account', id: 'rent', amount: accounts.find(a=>a.id==='rent')?.fixedDaily || 0 },
+    { type: 'account', id: 'permit', amount: accounts.find(a=>a.id==='permit')?.fixedDaily || 0 },
+    { type: 'account', id: 'personal', amount: accounts.find(a=>a.id==='personal')?.fixedDaily || 0 },
+    { type: 'account', id: 'housing', amount: accounts.find(a=>a.id==='housing')?.fixedDaily || 0 }
+  ];
+
+  // Cut order if deficit (last cut first in fundingOrder = top priority)
+  // We allocate top→bottom; if money runs out, the rest get partial / zero (those become deficits)
+  let remaining = Number(totalIncome) || 0;
+  const breakdown = [];
+  const deficits = [];
+
+  for (const f of fundingOrder) {
+    let funded = 0;
+    let deficit = 0;
+    if (f.amount <= 0) {
+      funded = 0;
+    } else if (remaining >= f.amount) {
+      funded = f.amount;
+      remaining -= f.amount;
+    } else {
+      funded = remaining;
+      deficit = f.amount - remaining;
+      remaining = 0;
+    }
+
+    if (f.type === 'cash') {
+      breakdown.push({ kind: 'cash', id: f.id, name: f.name, icon: f.icon, target: f.amount, funded, deficit });
+    } else {
+      const acc = accounts.find(a => a.id === f.id);
+      breakdown.push({ kind: 'account', id: f.id, name: acc.name, icon: acc.icon, target: f.amount, funded, deficit });
+    }
+    if (deficit > 0) deficits.push({ id: f.id, amount: deficit });
+  }
+
+  // Whatever remains → savings
+  const savingsAcc = accounts.find(a => a.id === 'savings');
+  breakdown.push({ kind: 'account', id: 'savings', name: savingsAcc.name, icon: savingsAcc.icon, target: remaining, funded: remaining, deficit: 0 });
+
+  return { breakdown, consumablesCost, consumableBreakdown, totalIncome: Number(totalIncome) || 0, leftover: remaining };
+}
+
+// ============================================================================
+// NAVIGATION
+// ============================================================================
+function navTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  document.getElementById('page-' + page).classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+  if (page === 'home') renderHome();
+  if (page === 'entry') renderEntry();
+  if (page === 'inventory') renderInventory();
+  if (page === 'accounts') renderAccounts();
+  if (page === 'reports') renderReports();
+  window.scrollTo(0, 0);
+}
+
+// ============================================================================
+// MODAL
+// ============================================================================
+function openModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+// ============================================================================
+// HOME / DASHBOARD
+// ============================================================================
+async function renderHome() {
+  const accounts = (await dbAll('accounts')).sort((a,b)=>a.order-b.order);
+  const entries = await dbAll('entries');
+  const today = todayISO();
+  const todayEntry = entries.find(e => e.date === today);
+  const consumables = await dbAll('consumables');
+  const lowStock = consumables.filter(c => c.stock <= (c.lowThreshold || 0));
+  const setupDone = await dbGet('settings', 'setupComplete');
+
+  // Calculate totals across accounts
+  const totalSavings = accounts.find(a=>a.id==='savings')?.balance || 0;
+  const totalAcrossAll = accounts.reduce((s,a) => s + (a.balance || 0), 0);
+  const totalDeficit = accounts.reduce((s,a) => s + (a.deficit || 0), 0);
+
+  // 7-day income
+  const last7 = entries
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .slice(-7);
+  const week7Total = last7.reduce((s,e) => s + (e.totalIncome || 0), 0);
+
+  let html = `
+    <div class="hero-stat">
+      <div class="hero-label">Total across all accounts</div>
+      <div class="hero-value"><span class="hero-currency">${CURRENCY}</span>${fmt(totalAcrossAll)}</div>
+      <div class="hero-meta">
+        <div>Savings <strong>${fmtMoney(totalSavings)}</strong></div>
+        ${totalDeficit > 0 ? `<div class="text-warn">Deficit <strong>${fmtMoney(totalDeficit)}</strong></div>` : ''}
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-tile">
+        <div class="stat-tile-label">Today's income</div>
+        <div class="stat-tile-value">${todayEntry ? `<span class="tiny">${CURRENCY}</span>${fmt(todayEntry.totalIncome)}` : '<span class="text-faint">—</span>'}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-label">Last 7 days</div>
+        <div class="stat-tile-value"><span class="tiny">${CURRENCY}</span>${fmt(week7Total)}</div>
+      </div>
+    </div>
+  `;
+
+  // Today's status
+  if (!todayEntry) {
+    html += `
+      <div class="card" style="background: linear-gradient(135deg, rgba(77, 159, 255, 0.15) 0%, rgba(0, 212, 255, 0.05) 100%);">
+        <div class="card-title" style="margin-bottom:8px;">Today, ${niceDate(today)}</div>
+        <div style="font-size:14px; color: var(--text-dim); margin-bottom: 14px;">No entry yet. Log today's income to split it across your accounts.</div>
+        <button class="btn" onclick="navTo('entry')">＋ Log today's income</button>
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Today's split</div>
+          <button class="card-action" onclick="viewEntry('${todayEntry.id}')">View</button>
+        </div>
+        ${renderSplitMini(todayEntry.breakdown)}
+      </div>
+    `;
+  }
+
+  // Low stock alerts
+  if (lowStock.length > 0) {
+    html += `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚠ Low stock</div>
+          <button class="card-action" onclick="navTo('inventory')">Manage</button>
+        </div>
+        ${lowStock.slice(0, 3).map(c => `
+          <div class="row">
+            <div class="row-main">
+              <div class="row-icon warn">⚠</div>
+              <div class="row-text">
+                <div class="row-title">${c.name}</div>
+                <div class="row-sub">${c.stock} ${c.unit || 'units'} left · threshold ${c.lowThreshold}</div>
+              </div>
+            </div>
+            <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(c.unitCost)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // Recent entries
+  const recent = entries.sort((a,b)=>b.date.localeCompare(a.date)).slice(0, 5);
+  if (recent.length > 0) {
+    html += `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Recent days</div>
+          <button class="card-action" onclick="navTo('reports')">All</button>
+        </div>
+        ${recent.map(e => `
+          <div class="row" onclick="viewEntry('${e.id}')" style="cursor:pointer;">
+            <div class="row-main">
+              <div class="row-icon">📅</div>
+              <div class="row-text">
+                <div class="row-title">${niceDate(e.date)}</div>
+                <div class="row-sub">${e.pagesPrinted || 0} pages · ${(e.consumableBreakdown || []).length} items</div>
+              </div>
+            </div>
+            <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(e.totalIncome)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  // Backup reminder
+  const lastBackup = (await dbGet('settings', 'lastBackup'))?.value;
+  const lastReminder = (await dbGet('settings', 'lastBackupReminder'))?.value;
+  const daysSinceBackup = lastBackup ? Math.floor((Date.now() - new Date(lastBackup).getTime()) / 86400000) : 999;
+  if (daysSinceBackup >= 7 && entries.length > 0) {
+    html += `
+      <div class="card" style="border-color: rgba(255, 181, 71, 0.3);">
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <div style="font-size: 24px;">💾</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700; margin-bottom: 4px;">Time to back up</div>
+            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 12px;">It's been ${daysSinceBackup === 999 ? 'a while' : daysSinceBackup + ' days'} since your last backup. Save your data to a file you can keep safe.</div>
+            <button class="btn btn-secondary" onclick="exportBackup()">Backup now</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById('page-home').innerHTML = html;
+}
+
+function renderSplitMini(breakdown) {
+  if (!breakdown) return '';
+  return breakdown.map(b => `
+    <div class="row">
+      <div class="row-main">
+        <div class="row-icon ${b.kind === 'cash' ? 'gold' : ''}">${b.icon}</div>
+        <div class="row-text">
+          <div class="row-title">${b.name}</div>
+          <div class="row-sub">${b.kind === 'cash' ? 'Cash payout' : 'To account'}${b.deficit > 0 ? ` · <span class="text-bad">deficit ${fmtMoney(b.deficit)}</span>` : ''}</div>
+        </div>
+      </div>
+      <div class="row-amount ${b.deficit > 0 ? 'bad' : ''}"><span class="tiny">${CURRENCY}</span>${fmt(b.funded)}</div>
+    </div>
+  `).join('');
+}
+
+
+// ============================================================================
+// DAILY ENTRY PAGE
+// ============================================================================
+let entryDraft = {
+  date: todayISO(),
+  totalIncome: 0,
+  printerReading: 0,
+  pagesPrinted: 0,
+  consumablesUsed: []
+};
+
+async function renderEntry() {
+  const consumables = await dbAll('consumables');
+  const lastReading = (await dbGet('settings', 'lastPrinterReading'))?.value || 0;
+  const entries = await dbAll('entries');
+  const existingForDate = entries.find(e => e.date === entryDraft.date);
+
+  // Set initial draft values
+  if (entryDraft.printerReading === 0) entryDraft.printerReading = lastReading;
+
+  const manualConsumables = consumables.filter(c => !c.autoPaper);
+
+  let html = `
+    <div class="section-title">New entry</div>
+    <div class="section-sub">Log today's income and consumption. The app will calculate the split.</div>
+
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">📅 Date</label>
+        <input type="date" id="e_date" value="${entryDraft.date}" max="${todayISO()}" onchange="onDateChange(this.value)">
+        ${existingForDate ? '<div class="form-hint text-warn">⚠ An entry exists for this date. Saving will replace it.</div>' : ''}
+      </div>
+      <div class="form-group">
+        <label class="form-label">💰 Total amount collected</label>
+        <div class="input-prefix">
+          <span class="prefix">${CURRENCY}</span>
+          <input type="number" inputmode="decimal" id="e_total" value="${entryDraft.totalIncome || ''}" placeholder="0" oninput="entryDraft.totalIncome=parseFloat(this.value)||0; updatePreview();">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🖨 Printer counter reading now</label>
+        <input type="number" inputmode="numeric" id="e_printer" value="${entryDraft.printerReading || ''}" placeholder="0" oninput="onPrinterRead(this.value)">
+        <div class="form-hint">Last reading: ${lastReading.toLocaleString()}. Pages today: <strong id="pagesPreview">${Math.max(0, entryDraft.printerReading - lastReading)}</strong></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Consumables used</div>
+        ${manualConsumables.length > 0 ? `<button class="card-action" onclick="navTo('inventory')">Manage</button>` : ''}
+      </div>
+      ${manualConsumables.length === 0 ? `
+        <div class="empty">
+          <div class="empty-icon">▦</div>
+          <div class="empty-text">No consumables added yet.<br>Add items in Stock to track them here.</div>
+          <button class="btn btn-secondary mt-12" onclick="navTo('inventory')">Add items</button>
+        </div>
+      ` : manualConsumables.map(c => {
+        const used = entryDraft.consumablesUsed.find(u => u.consumableId === c.id);
+        return `
+          <div class="consume-row">
+            <div>
+              <div class="consume-name">${c.name}</div>
+              <div class="consume-stock">${c.stock} ${c.unit || ''} in stock · ${fmtMoney(c.unitCost)} each</div>
+            </div>
+            <input type="number" inputmode="numeric" min="0" class="consume-input" value="${used?.qty || ''}" placeholder="0" oninput="onConsumableUsed('${c.id}', this.value)">
+            <div class="text-faint" style="font-size: 11px; text-align:center;">${c.unit || ''}</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="card" id="splitPreview">
+      <div class="card-title mb-12">Live split preview</div>
+      <div id="splitPreviewBody">
+        <div class="empty"><div class="empty-text">Enter today's amount to see the split</div></div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="saveEntry()">Save entry</button>
+  `;
+  document.getElementById('page-entry').innerHTML = html;
+  updatePreview();
+}
+
+function onDateChange(v) {
+  entryDraft.date = v;
+  renderEntry();
+}
+
+function onPrinterRead(v) {
+  entryDraft.printerReading = parseInt(v) || 0;
+  dbGet('settings', 'lastPrinterReading').then(s => {
+    const last = s?.value || 0;
+    entryDraft.pagesPrinted = Math.max(0, entryDraft.printerReading - last);
+    document.getElementById('pagesPreview').textContent = entryDraft.pagesPrinted.toLocaleString();
+    updatePreview();
+  });
+}
+
+function onConsumableUsed(id, val) {
+  const qty = parseInt(val) || 0;
+  const idx = entryDraft.consumablesUsed.findIndex(u => u.consumableId === id);
+  if (idx >= 0) entryDraft.consumablesUsed[idx].qty = qty;
+  else entryDraft.consumablesUsed.push({ consumableId: id, qty });
+  updatePreview();
+}
+
+async function updatePreview() {
+  const result = await computeSplit({
+    totalIncome: entryDraft.totalIncome,
+    pagesPrinted: entryDraft.pagesPrinted,
+    consumablesUsed: entryDraft.consumablesUsed
+  });
+  let html = '';
+  if (result.totalIncome <= 0) {
+    html = '<div class="empty"><div class="empty-text">Enter today\'s amount to see the split</div></div>';
+  } else {
+    // Mini bar
+    const total = result.totalIncome;
+    const colors = ['#ffcd5c','#ffcd5c','#4d9fff','#4d9fff','#4d9fff','#4d9fff','#4d9fff','#4d9fff','#22d39a'];
+    const bar = result.breakdown.map((b, i) =>
+      `<div class="split-bar-seg" style="width: ${(b.funded / total * 100)}%; background: ${colors[i] || '#4d9fff'};"></div>`
+    ).join('');
+    html = `<div class="split-bar">${bar}</div>` + renderSplitMini(result.breakdown);
+    if (result.breakdown.some(b => b.deficit > 0)) {
+      html += `<div class="badge badge-warn mt-12">⚠ Income too low — some accounts have a deficit</div>`;
+    }
+  }
+  document.getElementById('splitPreviewBody').innerHTML = html;
+}
+
+async function saveEntry() {
+  if (entryDraft.totalIncome <= 0) {
+    toast('Enter today\'s amount first', 'bad');
+    return;
+  }
+
+  const lastReading = (await dbGet('settings', 'lastPrinterReading'))?.value || 0;
+  if (entryDraft.printerReading < lastReading) {
+    toast('Printer reading must be ≥ last reading', 'bad');
+    return;
+  }
+
+  const result = await computeSplit({
+    totalIncome: entryDraft.totalIncome,
+    pagesPrinted: entryDraft.pagesPrinted,
+    consumablesUsed: entryDraft.consumablesUsed
+  });
+
+  // Check for existing entry on this date
+  const all = await dbAll('entries');
+  const existing = all.find(e => e.date === entryDraft.date);
+  if (existing) {
+    // Reverse its effect first
+    await reverseEntryEffect(existing);
+    await dbDelete('entries', existing.id);
+  }
+
+  // Apply new entry
+  const entry = {
+    id: uid(),
+    date: entryDraft.date,
+    totalIncome: entryDraft.totalIncome,
+    printerReading: entryDraft.printerReading,
+    pagesPrinted: entryDraft.pagesPrinted,
+    consumablesUsed: entryDraft.consumablesUsed.filter(u => u.qty > 0),
+    consumableBreakdown: result.consumableBreakdown,
+    consumablesCost: result.consumablesCost,
+    breakdown: result.breakdown,
+    createdAt: new Date().toISOString()
+  };
+
+  await applyEntryEffect(entry);
+  await dbPut('entries', entry);
+  await dbPut('settings', { key: 'lastPrinterReading', value: entryDraft.printerReading });
+
+  toast('Entry saved ✓', 'good');
+  // Reset draft
+  entryDraft = { date: todayISO(), totalIncome: 0, printerReading: entryDraft.printerReading, pagesPrinted: 0, consumablesUsed: [] };
+  navTo('home');
+}
+
+async function applyEntryEffect(entry) {
+  // Add to account balances (funded amounts)
+  const accounts = await dbAll('accounts');
+  for (const b of entry.breakdown) {
+    if (b.kind === 'account') {
+      const acc = accounts.find(a => a.id === b.id);
+      if (acc) {
+        acc.balance = (acc.balance || 0) + b.funded;
+        acc.deficit = (acc.deficit || 0) + b.deficit;
+        await dbPut('accounts', acc);
+      }
+    }
+  }
+  // Deduct consumable stock
+  for (const used of (entry.consumableBreakdown || [])) {
+    if (used.consumableId) {
+      const c = await dbGet('consumables', used.consumableId);
+      if (c) {
+        c.stock = Math.max(0, (c.stock || 0) - used.qty);
+        await dbPut('consumables', c);
+      }
+    }
+  }
+}
+
+async function reverseEntryEffect(entry) {
+  const accounts = await dbAll('accounts');
+  for (const b of entry.breakdown) {
+    if (b.kind === 'account') {
+      const acc = accounts.find(a => a.id === b.id);
+      if (acc) {
+        acc.balance = (acc.balance || 0) - b.funded;
+        acc.deficit = Math.max(0, (acc.deficit || 0) - b.deficit);
+        await dbPut('accounts', acc);
+      }
+    }
+  }
+  for (const used of (entry.consumableBreakdown || [])) {
+    if (used.consumableId) {
+      const c = await dbGet('consumables', used.consumableId);
+      if (c) {
+        c.stock = (c.stock || 0) + used.qty;
+        await dbPut('consumables', c);
+      }
+    }
+  }
+}
+
+async function viewEntry(id) {
+  const e = await dbGet('entries', id);
+  if (!e) return;
+  let html = `
+    <div class="modal-title">${niceDate(e.date)}</div>
+    <div class="modal-desc">Income: ${fmtMoney(e.totalIncome)} · ${e.pagesPrinted || 0} pages printed</div>
+
+    <div class="card-title mb-8">Split breakdown</div>
+    <div class="card" style="margin-bottom:14px;">${renderSplitMini(e.breakdown)}</div>
+  `;
+
+  if (e.consumableBreakdown && e.consumableBreakdown.length > 0) {
+    html += `
+      <div class="card-title mb-8">Consumables used</div>
+      <div class="card" style="margin-bottom:14px;">
+        ${e.consumableBreakdown.map(c => `
+          <div class="row">
+            <div class="row-main">
+              <div class="row-icon">📦</div>
+              <div class="row-text">
+                <div class="row-title">${c.name}</div>
+                <div class="row-sub">${c.qty} ${c.unit}</div>
+              </div>
+            </div>
+            <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(c.cost)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  html += `
+    <button class="btn btn-secondary" onclick="closeModal(); editEntry('${e.id}')">Edit</button>
+    <button class="btn btn-danger mt-8" onclick="deleteEntry('${e.id}')">Delete</button>
+  `;
+  openModal(html);
+}
+
+async function editEntry(id) {
+  const e = await dbGet('entries', id);
+  if (!e) return;
+  // Reverse first, so user can re-edit
+  await reverseEntryEffect(e);
+  await dbDelete('entries', id);
+
+  // Reset printer reading to before this entry (best-effort)
+  // We'll set printerReading back to what it was before
+  const all = await dbAll('entries');
+  all.sort((a,b) => a.date.localeCompare(b.date));
+  const lastBeforeOrEqual = all.filter(x => x.date < e.date).pop();
+  if (lastBeforeOrEqual) {
+    await dbPut('settings', { key: 'lastPrinterReading', value: lastBeforeOrEqual.printerReading });
+  }
+
+  entryDraft = {
+    date: e.date,
+    totalIncome: e.totalIncome,
+    printerReading: e.printerReading,
+    pagesPrinted: e.pagesPrinted,
+    consumablesUsed: e.consumablesUsed || []
+  };
+  navTo('entry');
+  toast('Editing entry — save to apply changes', 'good');
+}
+
+async function deleteEntry(id) {
+  if (!confirm('Delete this entry? Account balances will be reversed.')) return;
+  const e = await dbGet('entries', id);
+  if (!e) return;
+  await reverseEntryEffect(e);
+  await dbDelete('entries', id);
+  closeModal();
+  toast('Entry deleted', 'good');
+  renderHome();
+}
+
+// ============================================================================
+// INVENTORY PAGE
+// ============================================================================
+async function renderInventory() {
+  const consumables = (await dbAll('consumables')).sort((a,b) => (a.order||0) - (b.order||0));
+
+  let html = `
+    <div class="section-title">Inventory</div>
+    <div class="section-sub">Track consumable items used at the cafe.</div>
+
+    <button class="btn mb-16" onclick="openConsumableForm()">＋ Add new item</button>
+  `;
+
+  if (consumables.length === 0) {
+    html += `
+      <div class="empty">
+        <div class="empty-icon">▦</div>
+        <div class="empty-text">No items yet.<br>Add paper, ink, envelopes, or anything you sell or consume.</div>
+      </div>
+    `;
+  } else {
+    html += `<div class="card">`;
+    for (const c of consumables) {
+      const isLow = c.stock <= (c.lowThreshold || 0);
+      html += `
+        <div class="row" onclick="openConsumableForm('${c.id}')" style="cursor:pointer;">
+          <div class="row-main">
+            <div class="row-icon ${isLow ? 'warn' : ''}">${c.autoPaper ? '📄' : '📦'}</div>
+            <div class="row-text">
+              <div class="row-title">${c.name} ${c.autoPaper ? '<span class="badge badge-info" style="margin-left:6px;">auto</span>' : ''}</div>
+              <div class="row-sub">${c.stock} ${c.unit || ''} · ${fmtMoney(c.unitCost)} each ${isLow ? '· <span class="text-warn">low</span>' : ''}</div>
+            </div>
+          </div>
+          <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(c.stock * c.unitCost)}</div>
+        </div>
+      `;
+    }
+    html += `</div>`;
+
+    html += `
+      <button class="btn btn-secondary mt-12" onclick="openRestockForm()">＋ Log restock purchase</button>
+    `;
+
+    // Recent restocks
+    const restocks = (await dbAll('restocks')).sort((a,b) => b.date.localeCompare(a.date)).slice(0, 5);
+    if (restocks.length > 0) {
+      html += `
+        <div class="card mt-16">
+          <div class="card-title mb-8">Recent restocks</div>
+          ${restocks.map(r => `
+            <div class="row">
+              <div class="row-main">
+                <div class="row-icon green">🛒</div>
+                <div class="row-text">
+                  <div class="row-title">${r.itemName}</div>
+                  <div class="row-sub">${shortDate(r.date)} · +${r.qty} ${r.unit || ''}</div>
+                </div>
+              </div>
+              <div class="row-amount bad">−<span class="tiny">${CURRENCY}</span>${fmt(r.cost)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  }
+
+  document.getElementById('page-inventory').innerHTML = html;
+}
+
+async function openConsumableForm(id) {
+  const c = id ? await dbGet('consumables', id) : null;
+  const html = `
+    <div class="modal-title">${c ? 'Edit item' : 'Add item'}</div>
+    <div class="modal-desc">${c ? 'Edit details for this consumable.' : 'Add a new consumable to track.'}</div>
+
+    <div class="form-group">
+      <label class="form-label">Item name</label>
+      <input type="text" id="c_name" value="${c?.name || ''}" placeholder="e.g. A4 Paper">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Unit</label>
+      <input type="text" id="c_unit" value="${c?.unit || ''}" placeholder="e.g. sheets, pieces, units">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Unit cost (your buying price)</label>
+      <div class="input-prefix">
+        <span class="prefix">${CURRENCY}</span>
+        <input type="number" inputmode="decimal" step="0.01" id="c_cost" value="${c?.unitCost || ''}" placeholder="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Current stock</label>
+      <input type="number" inputmode="numeric" id="c_stock" value="${c?.stock || ''}" placeholder="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Low-stock alert threshold</label>
+      <input type="number" inputmode="numeric" id="c_low" value="${c?.lowThreshold || ''}" placeholder="0">
+      <div class="form-hint">Get notified when stock drops to this level.</div>
+    </div>
+    <div class="form-group">
+      <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+        <input type="checkbox" id="c_auto" style="width:auto;" ${c?.autoPaper ? 'checked' : ''}>
+        <span>Auto-deduct from printer pages</span>
+      </label>
+      <div class="form-hint">Tick this for printer paper. Stock will be reduced automatically based on pages printed (1 page = 1 sheet).</div>
+    </div>
+
+    <button class="btn" onclick="saveConsumable('${c?.id || ''}')">${c ? 'Save changes' : 'Add item'}</button>
+    ${c ? `<button class="btn btn-danger mt-8" onclick="deleteConsumable('${c.id}')">Delete</button>` : ''}
+  `;
+  openModal(html);
+}
+
+async function saveConsumable(id) {
+  const name = document.getElementById('c_name').value.trim();
+  if (!name) { toast('Name is required', 'bad'); return; }
+
+  const isAuto = document.getElementById('c_auto').checked;
+  if (isAuto) {
+    // Ensure only one autoPaper item
+    const all = await dbAll('consumables');
+    for (const x of all) {
+      if (x.autoPaper && x.id !== id) {
+        x.autoPaper = false;
+        await dbPut('consumables', x);
+      }
+    }
+  }
+
+  const c = id ? await dbGet('consumables', id) : { id: uid(), order: Date.now() };
+  c.name = name;
+  c.unit = document.getElementById('c_unit').value.trim() || 'units';
+  c.unitCost = parseFloat(document.getElementById('c_cost').value) || 0;
+  c.stock = parseInt(document.getElementById('c_stock').value) || 0;
+  c.lowThreshold = parseInt(document.getElementById('c_low').value) || 0;
+  c.autoPaper = isAuto;
+  await dbPut('consumables', c);
+  closeModal();
+  toast('Saved ✓', 'good');
+  renderInventory();
+}
+
+async function deleteConsumable(id) {
+  if (!confirm('Delete this item? It will not affect past entries.')) return;
+  await dbDelete('consumables', id);
+  closeModal();
+  toast('Deleted', 'good');
+  renderInventory();
+}
+
+async function openRestockForm() {
+  const consumables = await dbAll('consumables');
+  if (consumables.length === 0) {
+    toast('Add an item first', 'bad');
+    return;
+  }
+  const html = `
+    <div class="modal-title">Log a restock purchase</div>
+    <div class="modal-desc">Logging a purchase deducts from your Consumables account and adds to inventory.</div>
+
+    <div class="form-group">
+      <label class="form-label">Item</label>
+      <select id="r_item">
+        ${consumables.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Quantity purchased</label>
+      <input type="number" inputmode="numeric" id="r_qty" placeholder="0">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Total cost</label>
+      <div class="input-prefix">
+        <span class="prefix">${CURRENCY}</span>
+        <input type="number" inputmode="decimal" id="r_cost" placeholder="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" id="r_date" value="${todayISO()}" max="${todayISO()}">
+    </div>
+    <button class="btn" onclick="saveRestock()">Save restock</button>
+  `;
+  openModal(html);
+}
+
+async function saveRestock() {
+  const itemId = document.getElementById('r_item').value;
+  const qty = parseInt(document.getElementById('r_qty').value) || 0;
+  const cost = parseFloat(document.getElementById('r_cost').value) || 0;
+  const date = document.getElementById('r_date').value;
+  if (qty <= 0 || cost <= 0) { toast('Enter quantity and cost', 'bad'); return; }
+
+  const item = await dbGet('consumables', itemId);
+  item.stock = (item.stock || 0) + qty;
+  await dbPut('consumables', item);
+
+  const acc = await dbGet('accounts', 'consumables');
+  acc.balance = (acc.balance || 0) - cost;
+  await dbPut('accounts', acc);
+
+  await dbPut('restocks', {
+    id: uid(),
+    date,
+    itemId,
+    itemName: item.name,
+    unit: item.unit,
+    qty,
+    cost,
+    createdAt: new Date().toISOString()
+  });
+
+  closeModal();
+  toast('Restock saved ✓', 'good');
+  renderInventory();
+}
+
+// ============================================================================
+// ACCOUNTS PAGE
+// ============================================================================
+async function renderAccounts() {
+  const accounts = (await dbAll('accounts')).sort((a,b)=>a.order-b.order);
+  const wage = (await dbGet('settings', 'attendantWage'))?.value || 0;
+  const chama = (await dbGet('settings', 'chamaDaily'))?.value || 0;
+
+  let html = `
+    <div class="section-title">Accounts</div>
+    <div class="section-sub">Tap an account to see balance, details, and log a transfer.</div>
+
+    <div class="card">
+      <div class="card-title mb-8">Bank / M-Pesa accounts</div>
+      ${accounts.map(a => `
+        <div class="row" onclick="openAccount('${a.id}')" style="cursor:pointer;">
+          <div class="row-main">
+            <div class="row-icon">${a.icon}</div>
+            <div class="row-text">
+              <div class="row-title">${a.name}</div>
+              <div class="row-sub">${a.bankType ? `${a.bankType}${a.bankNumber ? ' · ' + a.bankNumber : ''}` : 'No details set'}${a.deficit > 0 ? ` · <span class="text-warn">deficit ${fmtMoney(a.deficit)}</span>` : ''}</div>
+            </div>
+          </div>
+          <div class="row-amount ${a.balance < 0 ? 'bad' : ''}"><span class="tiny">${CURRENCY}</span>${fmt(a.balance)}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-title mb-8">Daily cash payouts</div>
+      <div class="row" onclick="editCashPayout('attendant')" style="cursor:pointer;">
+        <div class="row-main">
+          <div class="row-icon gold">👷</div>
+          <div class="row-text">
+            <div class="row-title">Attendant Wage</div>
+            <div class="row-sub">Recorded only · cash from till</div>
+          </div>
+        </div>
+        <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(wage)}/day</div>
+      </div>
+      <div class="row" onclick="editCashPayout('chama')" style="cursor:pointer;">
+        <div class="row-main">
+          <div class="row-icon gold">🤝</div>
+          <div class="row-text">
+            <div class="row-title">Chama</div>
+            <div class="row-sub">Recorded only</div>
+          </div>
+        </div>
+        <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(chama)}/day</div>
+      </div>
+    </div>
+  `;
+  document.getElementById('page-accounts').innerHTML = html;
+}
+
+async function openAccount(id) {
+  const a = await dbGet('accounts', id);
+  const transfers = (await dbAll('transfers')).filter(t => t.accountId === id).sort((a,b) => b.date.localeCompare(a.date)).slice(0, 10);
+
+  let html = `
+    <div class="modal-title">${a.icon} ${a.name}</div>
+    <div class="modal-desc">Balance pending transfer to this account</div>
+
+    <div class="hero-stat" style="margin-bottom: 18px;">
+      <div class="hero-label">Current balance</div>
+      <div class="hero-value"><span class="hero-currency">${CURRENCY}</span>${fmt(a.balance)}</div>
+      ${a.deficit > 0 ? `<div class="hero-meta"><div class="text-warn">Deficit owed: <strong>${fmtMoney(a.deficit)}</strong></div></div>` : ''}
+      ${a.fixed && a.fixedDaily > 0 ? `<div class="hero-meta"><div>Daily target: <strong>${fmtMoney(a.fixedDaily)}</strong></div></div>` : ''}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Bank / Service</label>
+      <input type="text" id="a_type" value="${a.bankType || ''}" placeholder="e.g. M-Pesa, Equity Bank, KCB">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Account / Phone number</label>
+      <input type="text" id="a_num" value="${a.bankNumber || ''}" placeholder="e.g. 0712345678 or 1234567890">
+    </div>
+    ${a.fixed ? `
+      <div class="form-group">
+        <label class="form-label">Daily fixed amount</label>
+        <div class="input-prefix">
+          <span class="prefix">${CURRENCY}</span>
+          <input type="number" inputmode="decimal" id="a_fixed" value="${a.fixedDaily || ''}" placeholder="0">
+        </div>
+      </div>
+    ` : ''}
+
+    <button class="btn" onclick="saveAccount('${a.id}')">Save details</button>
+    <button class="btn btn-secondary mt-8" onclick="logTransfer('${a.id}')">＋ Log transfer out</button>
+
+    ${transfers.length > 0 ? `
+      <div class="card-title mt-24 mb-8">Recent transfers</div>
+      <div class="card">
+        ${transfers.map(t => `
+          <div class="row">
+            <div class="row-main">
+              <div class="row-icon green">↗</div>
+              <div class="row-text">
+                <div class="row-title">${t.note || 'Transfer'}</div>
+                <div class="row-sub">${niceDate(t.date)}</div>
+              </div>
+            </div>
+            <div class="row-amount bad">−<span class="tiny">${CURRENCY}</span>${fmt(t.amount)}</div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+  `;
+  openModal(html);
+}
+
+async function saveAccount(id) {
+  const a = await dbGet('accounts', id);
+  a.bankType = document.getElementById('a_type').value.trim();
+  a.bankNumber = document.getElementById('a_num').value.trim();
+  if (a.fixed) {
+    const f = document.getElementById('a_fixed');
+    if (f) a.fixedDaily = parseFloat(f.value) || 0;
+  }
+  await dbPut('accounts', a);
+  closeModal();
+  toast('Saved ✓', 'good');
+  renderAccounts();
+}
+
+async function logTransfer(accountId) {
+  const a = await dbGet('accounts', accountId);
+  const html = `
+    <div class="modal-title">Log transfer out</div>
+    <div class="modal-desc">Record that you've sent money out of "${a.name}". Balance will be reduced.</div>
+
+    <div class="form-group">
+      <label class="form-label">Amount</label>
+      <div class="input-prefix">
+        <span class="prefix">${CURRENCY}</span>
+        <input type="number" inputmode="decimal" id="t_amount" placeholder="0">
+      </div>
+      <div class="form-hint">Available: ${fmtMoney(a.balance)}</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Note (optional)</label>
+      <input type="text" id="t_note" placeholder="e.g. Paid landlord">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" id="t_date" value="${todayISO()}" max="${todayISO()}">
+    </div>
+    <button class="btn" onclick="saveTransfer('${accountId}')">Save transfer</button>
+  `;
+  openModal(html);
+}
+
+async function saveTransfer(accountId) {
+  const amount = parseFloat(document.getElementById('t_amount').value) || 0;
+  const note = document.getElementById('t_note').value.trim();
+  const date = document.getElementById('t_date').value;
+  if (amount <= 0) { toast('Enter an amount', 'bad'); return; }
+
+  const a = await dbGet('accounts', accountId);
+  a.balance = (a.balance || 0) - amount;
+  await dbPut('accounts', a);
+  await dbPut('transfers', { id: uid(), accountId, amount, note, date, createdAt: new Date().toISOString() });
+
+  closeModal();
+  toast('Transfer logged ✓', 'good');
+  renderAccounts();
+}
+
+async function editCashPayout(which) {
+  const wage = (await dbGet('settings', 'attendantWage'))?.value || 0;
+  const chama = (await dbGet('settings', 'chamaDaily'))?.value || 0;
+  const cur = which === 'attendant' ? wage : chama;
+  const label = which === 'attendant' ? 'Attendant daily wage' : 'Chama daily contribution';
+  const html = `
+    <div class="modal-title">${label}</div>
+    <div class="modal-desc">This amount is deducted from daily income and recorded as a cash payout.</div>
+    <div class="form-group">
+      <label class="form-label">Daily amount</label>
+      <div class="input-prefix">
+        <span class="prefix">${CURRENCY}</span>
+        <input type="number" inputmode="decimal" id="cp_val" value="${cur}" placeholder="0">
+      </div>
+    </div>
+    <button class="btn" onclick="saveCashPayout('${which}')">Save</button>
+  `;
+  openModal(html);
+}
+
+async function saveCashPayout(which) {
+  const v = parseFloat(document.getElementById('cp_val').value) || 0;
+  const key = which === 'attendant' ? 'attendantWage' : 'chamaDaily';
+  await dbPut('settings', { key, value: v });
+  closeModal();
+  toast('Saved ✓', 'good');
+  renderAccounts();
+}
+
+// ============================================================================
+// REPORTS PAGE
+// ============================================================================
+let reportRange = '7d';
+
+async function renderReports() {
+  const allEntries = (await dbAll('entries')).sort((a,b) => a.date.localeCompare(b.date));
+  const accounts = (await dbAll('accounts')).sort((a,b)=>a.order-b.order);
+
+  // Filter by range
+  const now = new Date();
+  let startDate;
+  if (reportRange === '7d') startDate = new Date(now.getTime() - 6 * 86400000);
+  else if (reportRange === '30d') startDate = new Date(now.getTime() - 29 * 86400000);
+  else if (reportRange === '90d') startDate = new Date(now.getTime() - 89 * 86400000);
+  else startDate = new Date(0);
+  const startISO = startDate.toISOString().slice(0,10);
+  const entries = allEntries.filter(e => e.date >= startISO);
+
+  const totalIncome = entries.reduce((s,e) => s + (e.totalIncome || 0), 0);
+  const totalPages = entries.reduce((s,e) => s + (e.pagesPrinted || 0), 0);
+  const totalConsumed = entries.reduce((s,e) => s + (e.consumablesCost || 0), 0);
+  const avgDaily = entries.length > 0 ? totalIncome / entries.length : 0;
+  const busiestDay = entries.reduce((max, e) => (e.totalIncome > (max?.totalIncome || 0) ? e : max), null);
+  const slowestDay = entries.reduce((min, e) => (min === null || e.totalIncome < min.totalIncome ? e : min), null);
+
+  // Category totals
+  const categoryTotals = {};
+  for (const e of entries) {
+    for (const b of (e.breakdown || [])) {
+      const key = b.id;
+      if (!categoryTotals[key]) categoryTotals[key] = { name: b.name, icon: b.icon, kind: b.kind, total: 0 };
+      categoryTotals[key].total += b.funded;
+    }
+  }
+
+  // Build mini bar chart (income per day)
+  const days = [];
+  const cur = new Date(startDate);
+  while (cur <= now) {
+    const d = cur.toISOString().slice(0,10);
+    const e = entries.find(x => x.date === d);
+    days.push({ date: d, total: e?.totalIncome || 0 });
+    cur.setDate(cur.getDate() + 1);
+  }
+  // For long ranges, sample
+  let displayDays = days;
+  if (days.length > 30) {
+    const step = Math.ceil(days.length / 30);
+    displayDays = days.filter((_, i) => i % step === 0);
+  }
+  const maxVal = Math.max(...displayDays.map(d => d.total), 1);
+
+  let html = `
+    <div class="section-title">Reports</div>
+    <div class="section-sub">Track your business performance over time.</div>
+
+    <div class="chips mb-16">
+      <button class="chip ${reportRange==='7d' ? 'active' : ''}" onclick="reportRange='7d'; renderReports();">7 days</button>
+      <button class="chip ${reportRange==='30d' ? 'active' : ''}" onclick="reportRange='30d'; renderReports();">30 days</button>
+      <button class="chip ${reportRange==='90d' ? 'active' : ''}" onclick="reportRange='90d'; renderReports();">90 days</button>
+      <button class="chip ${reportRange==='all' ? 'active' : ''}" onclick="reportRange='all'; renderReports();">All</button>
+    </div>
+
+    <div class="hero-stat">
+      <div class="hero-label">Total income · ${reportRange === 'all' ? 'all time' : 'last ' + reportRange.replace('d',' days')}</div>
+      <div class="hero-value"><span class="hero-currency">${CURRENCY}</span>${fmt(totalIncome)}</div>
+      <div class="hero-meta">
+        <div>Avg/day <strong>${fmtMoney(Math.round(avgDaily))}</strong></div>
+        <div>${entries.length} day${entries.length !== 1 ? 's' : ''} logged</div>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-tile">
+        <div class="stat-tile-label">Pages printed</div>
+        <div class="stat-tile-value">${totalPages.toLocaleString()}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-tile-label">Consumables used</div>
+        <div class="stat-tile-value"><span class="tiny">${CURRENCY}</span>${fmt(totalConsumed)}</div>
+      </div>
+    </div>
+  `;
+
+  if (entries.length === 0) {
+    html += `<div class="empty"><div class="empty-icon">▤</div><div class="empty-text">No entries in this range yet.</div></div>`;
+  } else {
+    html += `
+      <div class="card">
+        <div class="card-title mb-8">Daily income</div>
+        <div class="bar-chart">
+          ${displayDays.map(d => `
+            <div class="bar-chart-col">
+              <div class="bar-chart-bar" style="height: ${(d.total / maxVal * 100)}%"></div>
+              <div class="bar-chart-label">${shortDate(d.date).split(' ')[1]}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title mb-8">Where money went</div>
+        ${Object.values(categoryTotals).filter(c => c.total > 0).sort((a,b) => b.total - a.total).map(c => `
+          <div class="row">
+            <div class="row-main">
+              <div class="row-icon ${c.kind === 'cash' ? 'gold' : ''}">${c.icon}</div>
+              <div class="row-text">
+                <div class="row-title">${c.name}</div>
+                <div class="row-sub">${(c.total / totalIncome * 100).toFixed(1)}% of income</div>
+              </div>
+            </div>
+            <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(c.total)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    if (busiestDay) {
+      html += `
+        <div class="stat-grid">
+          <div class="stat-tile">
+            <div class="stat-tile-label">Best day</div>
+            <div class="stat-tile-value text-good"><span class="tiny">${CURRENCY}</span>${fmt(busiestDay.totalIncome)}</div>
+            <div class="text-faint" style="font-size:11px; margin-top:4px;">${shortDate(busiestDay.date)}</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-tile-label">Slowest day</div>
+            <div class="stat-tile-value text-bad"><span class="tiny">${CURRENCY}</span>${fmt(slowestDay.totalIncome)}</div>
+            <div class="text-faint" style="font-size:11px; margin-top:4px;">${shortDate(slowestDay.date)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    html += `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">All entries</div>
+          <button class="card-action" onclick="exportEntries()">Export CSV</button>
+        </div>
+        ${entries.slice().reverse().map(e => `
+          <div class="row" onclick="viewEntry('${e.id}')" style="cursor:pointer;">
+            <div class="row-main">
+              <div class="row-icon">📅</div>
+              <div class="row-text">
+                <div class="row-title">${niceDate(e.date)}</div>
+                <div class="row-sub">${e.pagesPrinted || 0} pages</div>
+              </div>
+            </div>
+            <div class="row-amount"><span class="tiny">${CURRENCY}</span>${fmt(e.totalIncome)}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  document.getElementById('page-reports').innerHTML = html;
+}
+
+async function exportEntries() {
+  const entries = (await dbAll('entries')).sort((a,b) => a.date.localeCompare(b.date));
+  if (entries.length === 0) { toast('No entries to export', 'bad'); return; }
+  let csv = 'Date,Total Income,Pages Printed,Consumables Cost,Wage,Chama,Bills,Rent,Permit,Personal,Housing,Savings,Deficits\n';
+  for (const e of entries) {
+    const row = { wage: 0, chama: 0, consumables: 0, bills: 0, rent: 0, permit: 0, personal: 0, housing: 0, savings: 0 };
+    let deficits = 0;
+    for (const b of (e.breakdown || [])) {
+      if (b.id === 'wage') row.wage = b.funded;
+      else if (b.id === 'chama') row.chama = b.funded;
+      else row[b.id] = b.funded;
+      if (b.deficit > 0) deficits += b.deficit;
+    }
+    csv += `${e.date},${e.totalIncome},${e.pagesPrinted || 0},${e.consumablesCost || 0},${row.wage},${row.chama},${row.bills},${row.rent},${row.permit},${row.personal},${row.housing},${row.savings},${deficits}\n`;
+  }
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `gtech-entries-${todayISO()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV downloaded ✓', 'good');
+}
+
+// ============================================================================
+// SETTINGS / BACKUP
+// ============================================================================
+function openSettings() {
+  const html = `
+    <div class="modal-title">Settings</div>
+    <div class="modal-desc">App version ${APP_VERSION}</div>
+
+    <button class="btn btn-secondary mb-8" onclick="closeModal(); openFixedAmounts();">💵 Fixed daily amounts</button>
+    <button class="btn btn-secondary mb-8" onclick="closeModal(); changePIN();">🔒 Change PIN</button>
+    <button class="btn btn-secondary mb-8" onclick="exportBackup();">💾 Backup all data</button>
+    <button class="btn btn-secondary mb-8" onclick="document.getElementById('importInput').click();">📥 Restore from backup</button>
+    <input type="file" id="importInput" accept="application/json" style="display:none;" onchange="importBackup(this.files[0])">
+    <button class="btn btn-secondary mb-8" onclick="closeModal(); openAbout();">ℹ About GTech</button>
+    <button class="btn btn-danger mt-16" onclick="confirmReset();">⚠ Reset all data</button>
+  `;
+  openModal(html);
+}
+
+function openAbout() {
+  const html = `
+    <div class="modal-title">About GTech</div>
+    <div class="modal-desc">Cyber Cafe Manager · v${APP_VERSION}</div>
+    <div class="card">
+      <div style="line-height: 1.7; color: var(--text-dim); font-size: 13px;">
+        GTech is a private, offline-first app for managing your cyber cafe income and inventory. Your data stays on your phone — no cloud, no servers, no tracking.<br><br>
+        <strong style="color: var(--text);">How splits work</strong><br>
+        Each day's income is allocated in this priority order: attendant wage → chama → consumables → bills → rent → business permit → personal → affordable housing → savings (whatever remains).<br><br>
+        <strong style="color: var(--text);">Backup matters</strong><br>
+        If you uninstall the browser, clear data, or lose your phone — and you don't have a backup — your records are gone. Back up weekly to be safe.
+      </div>
+    </div>
+    <button class="btn" onclick="closeModal()">Close</button>
+  `;
+  openModal(html);
+}
+
+async function exportBackup() {
+  const data = {
+    version: APP_VERSION,
+    exportedAt: new Date().toISOString(),
+    settings: await dbAll('settings'),
+    accounts: await dbAll('accounts'),
+    consumables: await dbAll('consumables'),
+    entries: await dbAll('entries'),
+    restocks: await dbAll('restocks'),
+    transfers: await dbAll('transfers')
+  };
+  // Strip the PIN hash from exports? No — keep it so restore preserves PIN
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `gtech-backup-${todayISO()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  await dbPut('settings', { key: 'lastBackup', value: new Date().toISOString() });
+  closeModal();
+  toast('Backup downloaded ✓', 'good');
+}
+
+async function importBackup(file) {
+  if (!file) return;
+  if (!confirm('This will replace ALL current data with the backup. Continue?')) return;
+  const text = await file.text();
+  try {
+    const data = JSON.parse(text);
+    if (!data.version || !data.accounts) throw new Error('Invalid backup file');
+
+    await dbClear('settings');
+    await dbClear('accounts');
+    await dbClear('consumables');
+    await dbClear('entries');
+    await dbClear('restocks');
+    await dbClear('transfers');
+
+    for (const x of data.settings || []) await dbPut('settings', x);
+    for (const x of data.accounts || []) await dbPut('accounts', x);
+    for (const x of data.consumables || []) await dbPut('consumables', x);
+    for (const x of data.entries || []) await dbPut('entries', x);
+    for (const x of data.restocks || []) await dbPut('restocks', x);
+    for (const x of data.transfers || []) await dbPut('transfers', x);
+
+    closeModal();
+    toast('Backup restored ✓', 'good');
+    renderHome();
+    navTo('home');
+  } catch (e) {
+    toast('Invalid backup file', 'bad');
+    console.error(e);
+  }
+}
+
+async function changePIN() {
+  pinMode = 'setup';
+  pinSetupValue = '';
+  pinBuffer = '';
+  await dbDelete('settings', 'pinHash');
+  document.getElementById('appShell').style.display = 'none';
+  buildPinPad();
+  document.getElementById('pinTitle').textContent = 'Create new PIN';
+  document.getElementById('pinSubtitle').textContent = 'Enter a new 4-digit PIN';
+  updatePinDots();
+  document.getElementById('pinScreen').classList.add('show');
+  // Force re-setup flow
+  await dbDelete('settings', 'setupComplete');
+  await dbPut('settings', { key: 'setupComplete', value: true }); // keep setup complete to skip onboarding
+}
+
+async function confirmReset() {
+  if (!confirm('DELETE ALL DATA? This cannot be undone. Make a backup first.')) return;
+  if (!confirm('Are you absolutely sure? All entries, accounts, and settings will be erased.')) return;
+  await dbClear('settings');
+  await dbClear('accounts');
+  await dbClear('consumables');
+  await dbClear('entries');
+  await dbClear('restocks');
+  await dbClear('transfers');
+  location.reload();
+}
+
+// ============================================================================
+// BOOT
+// ============================================================================
+async function boot() {
+  try {
+    await openDB();
+    await showPinScreen();
+  } catch (e) {
+    document.body.innerHTML = `<div style="padding:40px; text-align:center; color: var(--bad);">Failed to start app: ${e.message}<br><br>Try a different browser (Chrome recommended).</div>`;
+  }
+}
+
+// PWA service worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+boot();
+</script>
+</body>
+</html>
